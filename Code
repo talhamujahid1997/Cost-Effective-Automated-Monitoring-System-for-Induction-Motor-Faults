@@ -1,0 +1,993 @@
+#define THERMISTORNOMINAL 4760
+#define TEMPERATURENOMINAL 25
+#define BCOEFFICIENT 3550
+#define SERIESRESISTOR 4760
+
+byteledPin =  9;
+
+charletsStart='0';
+int i;
+unsigned long time1;
+unsigned long time2;
+unsigned long T;
+unsignedintrawdata;
+unsignedint data;
+unsigned long sum;
+unsignedint temp;
+float average;
+unsignedintspd;
+floatsteinhart;
+char letter0;
+
+void setup() {
+pinMode(ledPin, OUTPUT);
+digitalWrite(ledPin, HIGH);
+// initialize both serial ports:
+Serial.begin(115200);
+
+// endless loop until letsStartPin goes high;
+do {
+if (Serial.available ()>0)
+{
+letsStart=Serial.read();
+}
+}
+while (letsStart=='0');
+delay(500);
+}
+void loop()
+{
+if (Serial.available ()>0)
+{
+letter0=Serial.read();
+if(letter0=='l')
+{
+digitalWrite(ledPin, HIGH);
+do {
+if (Serial.available ()>0)
+{
+letter0=Serial.read();
+}
+}
+while (letter0=='l');
+}
+
+else if(letter0=='h')
+{
+digitalWrite(ledPin, LOW);
+do {
+if (Serial.available ()>0)
+{
+letter0=Serial.read();
+}
+}
+while (letter0=='h');
+}
+
+else if (letter0=='a')
+{
+///////////print current values//////////////
+time1=micros();
+for (i=0;i<1080;i++)
+{
+rawdata=analogRead(0);
+Serial.println(rawdata);
+time2=micros();
+
+T=time2-time1;
+time1=time2;
+if (i>=80)
+{
+sum=sum+T;
+}
+}
+///////print average sampling time period////
+average=sum/1000;
+Serial.println(average);
+
+//////////print temperature//////////
+temp=analogRead(3);
+temp = 1070 /temp-1;
+temp = SERIESRESISTOR / temp;
+steinhart = temp / THERMISTORNOMINAL; // (R/Ro)
+steinhart = log(steinhart);  // ln(R/Ro)
+steinhart /= BCOEFFICIENT;  // 1/B * ln(R/Ro)
+steinhart += 1.0 / (TEMPERATURENOMINAL + 273.15);
+// + (1/To)
+steinhart = 1.0 / steinhart;  // Invert
+steinhart -= 273.15;   // convert to C
+Serial.println(steinhart);
+
+//////////print rotor time period/////////
+spd=analogRead(4);
+if(spd<=600)
+{
+while(spd<=600)
+{spd=analogRead(4);}
+time1=micros();
+
+while(spd>600)
+{spd=analogRead(4);}
+
+while(spd<=600)
+{spd=analogRead(4);}
+
+time2=micros();
+T=time2-time1;
+Serial.println(T);
+}
+
+else if(spd>600)
+{
+while(spd>600)
+{spd=analogRead(4);}
+
+while(spd<=600)
+{spd=analogRead(4);}
+time1=micros();
+
+while(spd>600)
+{spd=analogRead(4);}
+
+while(spd<=600)
+{spd=analogRead(4);}
+time2=micros();
+T=time2-time1;
+Serial.println(T);
+}
+///////////////////////////////////////////////////
+sum=0;
+average=0;
+}
+else if (letter0=='b')
+{
+///////////print current values////////
+time1=micros();
+for (i=0;i<1080;i++)
+{
+rawdata=analogRead(1);
+Serial.println(rawdata);
+time2=micros();
+
+T=time2-time1;
+time1=time2;
+if (i>=80)
+{
+sum=sum+T;
+}
+}
+///////////print average sampling time period///
+average=sum/1000;
+Serial.println(average);
+
+//////////print temperature/////////
+temp=analogRead(3);
+temp = 1070 /temp-1;
+temp = SERIESRESISTOR / temp;
+steinhart = temp / THERMISTORNOMINAL; // (R/Ro)
+steinhart = log(steinhart); // ln(R/Ro)
+steinhart /= BCOEFFICIENT; // 1/B * ln(R/Ro)
+steinhart += 1.0 / (TEMPERATURENOMINAL + 273.15);
+// + (1/To)
+steinhart = 1.0 / steinhart;   // Invert
+steinhart -= 273.15;         // convert to C
+Serial.println(steinhart);
+
+//////////print rotor time period//////////
+spd=analogRead(4);
+if(spd<=600)
+{
+while(spd<=600)
+{spd=analogRead(4);}
+time1=micros();
+
+while(spd>600)
+{spd=analogRead(4);}
+
+while(spd<=600)
+{spd=analogRead(4);}
+
+time2=micros();
+T=time2-time1;
+Serial.println(T);
+}
+
+else if(spd>600)
+{
+while(spd>600)
+{spd=analogRead(4);}
+
+while(spd<=600)
+{spd=analogRead(4);}
+time1=micros();
+
+while(spd>600)
+{spd=analogRead(4);}
+
+while(spd<=600)
+{spd=analogRead(4);}
+time2=micros();
+T=time2-time1;
+Serial.println(T);
+}
+///////////////////////////////////////////////////
+sum=0;
+average=0;
+}
+else if (letter0=='c')
+{
+///////////print current values///////
+time1=micros();
+for (i=0;i<1080;i++)
+{
+rawdata=analogRead(2);
+Serial.println(rawdata);
+time2=micros();
+T=time2-time1;
+time1=time2;
+if (i>=80)
+{
+sum=sum+T;
+}
+}
+///////////print average sampling time period/////
+average=sum/1000;
+Serial.println(average);
+
+//////////print temperature///////////
+temp=analogRead(3);
+temp = 1070 /temp-1;
+temp = SERIESRESISTOR / temp;
+steinhart = temp / THERMISTORNOMINAL; // (R/Ro)
+steinhart = log(steinhart);  // ln(R/Ro)
+steinhart /= BCOEFFICIENT;  // 1/B * ln(R/Ro)
+steinhart += 1.0 / (TEMPERATURENOMINAL + 273.15); 
+// + (1/To)
+steinhart = 1.0 / steinhart; // Invert
+steinhart -= 273.15;  // convert to C
+Serial.println(steinhart);
+
+//////////print rotor time period///////
+spd=analogRead(4);
+if(spd<=600)
+{
+while(spd<=600)
+{spd=analogRead(4);}
+time1=micros();
+
+while(spd>600)
+{spd=analogRead(4);}
+
+while(spd<=600)
+{spd=analogRead(4);}
+
+time2=micros();
+T=time2-time1;
+Serial.println(T);
+}
+
+else if(spd>600)
+{
+while(spd>600)
+{spd=analogRead(4);}
+
+while(spd<=600)
+{spd=analogRead(4);}
+time1=micros();
+
+while(spd>600)
+{spd=analogRead(4);}
+
+while(spd<=600)
+{spd=analogRead(4);}
+time2=micros();
+T=time2-time1;
+Serial.println(T);
+}
+///////////////////////////////////////////////////
+sum=0;
+average=0;
+}
+else if (letter0=='d')
+{
+///////////print vibration values/////
+time1=micros();
+for (i=0;i<2080;i++)
+{
+rawdata=analogRead(5);
+Serial.println(rawdata);
+time2=micros();
+T=time2-time1;
+time1=time2;
+if (i>=80)
+{
+sum=sum+T;
+}
+}
+///////////print average sampling time period////
+average=sum/2000;
+Serial.println(average);
+
+//////////print temperature/////
+temp=analogRead(3);
+temp = 1070 /temp-1;
+temp = SERIESRESISTOR / temp;
+steinhart = temp / THERMISTORNOMINAL; // (R/Ro)
+steinhart = log(steinhart);  // ln(R/Ro)
+steinhart /= BCOEFFICIENT; // 1/B * ln(R/Ro)
+steinhart += 1.0 / (TEMPERATURENOMINAL + 273.15); 
+// + (1/To)
+steinhart = 1.0 / steinhart; // Invert
+steinhart -= 273.15;  // convert to C
+Serial.println(steinhart);
+
+//////////print rotor time period///////
+spd=analogRead(4);
+if(spd<=600)
+{
+while(spd<=600)
+{spd=analogRead(4);}
+time1=micros();
+
+while(spd>600)
+{spd=analogRead(4);}
+
+while(spd<=600)
+{spd=analogRead(4);}
+
+time2=micros();
+T=time2-time1;
+Serial.println(T);
+}
+
+else if(spd>600)
+{
+while(spd>600)
+{spd=analogRead(4);}
+
+while(spd<=600)
+{spd=analogRead(4);}
+time1=micros();
+
+while(spd>600)
+{spd=analogRead(4);}
+
+while(spd<=600)
+{spd=analogRead(4);}
+time2=micros();
+T=time2-time1;
+Serial.println(T);
+}
+///////////////////////////////////////////////////
+sum=0;
+average=0;
+}
+}
+delay(500);
+}
+
+Matlab Code:
+functionvarargout = untitled1(varargin)
+gui_Singleton = 1;
+gui_State = struct('gui_Name',       mfilename, ...
+'gui_Singleton',  gui_Singleton, ...
+'gui_OpeningFcn', @untitled1_OpeningFcn, ...
+'gui_OutputFcn',  @untitled1_OutputFcn, ...
+'gui_LayoutFcn',  [] , ...
+'gui_Callback',   []);
+ifnargin&&ischar(varargin{1})
+gui_State.gui_Callback = str2func(varargin{1});
+end
+
+ifnargout
+    [varargout{1:nargout}] = gui_mainfcn(gui_State, varargin{:});
+else
+gui_mainfcn(gui_State, varargin{:});
+end
+
+function untitled1_OpeningFcn(hObject, eventdata, handles, varargin)
+handles.output = hObject;
+guidata(hObject, handles);
+
+functionvarargout = untitled1_OutputFcn(hObject, eventdata, handles) 
+varargout{1} = handles.output;
+
+function pushbutton1_Callback(hObject, eventdata, handles)
+delete(instrfindall)
+clc
+
+set(handles.pushbutton1,'string','Running','backgroundColor','g','enable','off');
+globalcurrentrefAtdmn;
+globalcurrentrefBtdmn;
+globalcurrentrefCtdmn;
+globalcurrentrefAf;
+globalcurrentrefAFT;
+globalcurrentrefBf;
+globalcurrentrefBFT;
+globalcurrentrefCf;
+globalcurrentrefCFT;
+globalvibreftdmn;
+globalvibreff;
+globalvibrefFT;
+global s;
+
+s = serial('COM3'); %assigns the object s to serial port
+buffer=1024;
+set(s, 'InputBufferSize', buffer); %number of bytes in input buffer
+set(s, 'BaudRate', 115200);
+set(s, 'TimeOut', 30);
+
+disp(get(s,'Name')); 
+prop(1)=(get(s,'BaudRate'));
+prop(2)=(get(s,'DataBits'));
+prop(3)=(get(s, 'StopBit')); 
+prop(4)=(get(s, 'InputBufferSize'));
+prop(5)=(get(s, 'TimeOut'));
+disp(num2str(prop));
+
+current=zeros(1,1000);
+vibration=zeros(1,2000);
+dat=0;
+NFFT = 2^15;
+poles=4;
+
+fileID1='C:\Users\dell\Desktop\Database\Phase_A.txt';
+delimiterIn='\t';
+a=importdata(fileID1,delimiterIn);
+fileID1='C:\Users\dell\Desktop\Database\Phase_A_tdmn.txt';
+b=importdata(fileID1);
+currentrefAtdmn=b;
+currentrefAFs=a(1,1);
+currentrefAtemp=a(1,2);
+currentrefAsupply_freq=a(2,1);
+currentrefArotor_freq=a(2,2);
+currentrefAf=a(3:NFFT/2+3,1);      %FREQUENCIES%
+currentrefAFT=a(3:NFFT/2+3,2);      %VALUES%
+currentrefAFT=abs(currentrefAFT);
+% currentrefAFT=currentrefAFT.*conj(currentrefAFT)/NFFT;
+currentrefAFT=(currentrefAFT/max(abs(currentrefAFT)))*100;
+refAslip=((2*currentrefAsupply_freq/poles)-currentrefArotor_freq)/(2*currentrefAsupply_freq/poles);
+
+axes(handles.axes1)
+plot(currentrefAtdmn*3.4/440,'b')
+axis([0,1000,-4,4])
+holdon;
+xlabel('Time (Samples)');
+ylabel('Magnitude (A)');
+
+axes(handles.axes2)
+plot(currentrefAf,currentrefAFT,'b');
+axis([0,200,0,100])
+holdon;
+xlabel('Frequency (Hz)');
+ylabel('Magnitude (%)');
+
+fileID2='C:\Users\dell\Desktop\Database\Phase_B.txt';
+delimiterIn='\t';
+a=importdata(fileID2,delimiterIn);
+fileID2='C:\Users\dell\Desktop\Database\Phase_B_tdmn.txt';
+b=importdata(fileID2);
+currentrefBtdmn=b;
+currentrefBFs=a(1,1);
+currentrefBtemp=a(1,2);
+currentrefBsupply_freq=a(2,1);
+currentrefBrotor_freq=a(2,2);
+currentrefBf=a(3:NFFT/2+3,1);      %FREQUENCIES%
+currentrefBFT=a(3:NFFT/2+3,2);      %VALUES%
+currentrefBFT=abs(currentrefBFT);
+currentrefBFT=(currentrefBFT/max(abs(currentrefBFT)))*100;
+refBslip=((2*currentrefBsupply_freq/poles)-currentrefBrotor_freq)/(2*currentrefBsupply_freq/poles);
+
+axes(handles.axes3)
+plot(currentrefBtdmn*3.4/440,'b')
+axis([0,1000,-4,4])
+xlabel('Time (Samples)');
+ylabel('Magnitude (A)');
+holdon;
+
+axes(handles.axes4)
+plot(currentrefBf,currentrefBFT,'b');
+axis([0,200,0,100])
+holdon;
+xlabel('Frequency (Hz)');
+ylabel('Magnitude (%)');
+
+fileID3='C:\Users\dell\Desktop\Database\Phase_C.txt';
+delimiterIn='\t';
+a=importdata(fileID3,delimiterIn);
+fileID3='C:\Users\dell\Desktop\Database\Phase_C_tdmn.txt';
+b=importdata(fileID3);
+currentrefCtdmn=b;
+currentrefCFs=a(1,1);
+currentrefCtemp=a(1,2);
+currentrefCsupply_freq=a(2,1);
+currentrefCrotor_freq=a(2,2);
+currentrefCf=a(3:NFFT/2+3,1);      %FREQUENCIES%
+currentrefCFT=a(3:NFFT/2+3,2);      %VALUES%
+currentrefCFT=abs(currentrefCFT);
+currentrefCFT=(currentrefCFT/max(abs(currentrefCFT)))*100;
+refCslip=((2*currentrefCsupply_freq/poles)-currentrefCrotor_freq)/(2*currentrefCsupply_freq/poles);
+
+axes(handles.axes5)
+plot(currentrefCtdmn*3.4/440,'b')
+axis([0,1000,-4,4])
+holdon;
+xlabel('Time (Samples)');
+ylabel('Magnitude (A)');
+
+axes(handles.axes6)
+plot(currentrefCf,currentrefCFT,'b');
+axis([0,200,0,100])
+holdon;
+xlabel('Frequency (Hz)');
+ylabel('Magnitude (%)');
+
+fileID4='C:\Users\dell\Desktop\Database\Vibration.txt';
+delimiterIn='\t';
+a=importdata(fileID4,delimiterIn);
+fileID4='C:\Users\dell\Desktop\Database\Vibration_tdmn.txt';
+b=importdata(fileID4);
+vibreftdmn=b;
+vibrefFs=a(1,1);
+vibreftemp=a(1,2);
+vibrefsupply_freq=a(2,1);
+vibrefrotor_freq=a(2,2);
+vibreff=a(3:NFFT/2+3,1);      %FREQUENCIES%
+vibrefFT=a(3:NFFT/2+3,2);      %VALUES%
+vibrefFT=abs(vibrefFT);
+vibrefFT=(vibrefFT/max(vibrefFT))*100;
+vibrefslip=((2*currentrefAsupply_freq/poles)-vibrefrotor_freq)/(2*currentrefAsupply_freq/poles);
+%%%%%%%%%%%%%%%%%% slip measured during sampling of vibration %%%%%%%%%
+%%%%%%%%%%%%%%%%%% supply frequency is taken that of phase C %%%%%%%%%%
+axes(handles.axes7)
+plot(vibreftdmn*2.5/440,'b')
+axis([0,1000,-5,5])
+holdon;
+xlabel('Time (Samples)');
+ylabel('Magnitude (V)');
+
+axes(handles.axes8)
+plot(vibreff,vibrefFT,'b');
+axis([0,500,0,100])
+holdon;
+xlabel('Frequency (Hz)');
+ylabel('Magnitude (%)');
+
+fopen(s);
+pause(2);
+flushoutput(s);
+flushinput(s);
+i=1;
+
+fprintf(s,'%c','1');
+pause(2);
+n=1;
+while(1)
+
+%%%%%%%%%%%%% Phase A %%%%%%%%%%%%%%%%%%%%%%%
+fprintf(s,'%c','a');
+pause(2);
+if(s.BytesAvailable>500)
+for count=1:80
+dat = fscanf(s,'%f');
+end
+
+for count=1:1000
+dat = fscanf(s,'%f');
+current(:,count) = dat(1);
+end
+count=0;
+
+time=fscanf(s,'%f');
+Fs=1/(time*0.000001);
+temp=fscanf(s,'%f');
+offset=538;
+tdmn=current-offset;
+
+if(Fs>=2000 && max(abs(tdmn>10)))
+axes(handles.axes1)
+plot(currentrefAtdmn*3.4/440,'b')
+axis([0,1000,-4,4])
+xlabel('Time (Samples)');
+ylabel('Magnitude (A)');
+holdon;
+
+axes(handles.axes1)
+plot(tdmn*3.4/440,'r')
+axis([0,1000,-4,4])
+xlabel('Time (Samples)');
+ylabel('Magnitude (A)');
+holdoff;
+
+axes(handles.axes2)
+plot(currentrefAf,currentrefAFT,'b');
+axis([0,200,0,100])
+xlabel('Frequency (Hz)');
+ylabel('Magnitude (%)');
+holdon;
+
+        L=length(tdmn);
+fdmn = fft(tdmn,NFFT)/L;
+        f=Fs/2*linspace(0,1,NFFT/2+1);
+        FT=2*abs(fdmn(1:NFFT/2+1));
+        FT=abs(FT);
+        FT=(FT/max(abs(FT)))*100;
+axes(handles.axes2)
+plot(f,FT,'r');
+axis([0,200,0,100])
+xlabel('Frequency (Hz)');
+ylabel('Magnitude (%)');
+holdoff;
+
+rotor_T=fscanf(s,'%f');
+rotor_freq=1/(rotor_T*0.000001);
+
+range=find(f>49 & f<51);
+supl=find(FT==max(FT(range(1):range(end))));
+supply_freq=f(supl);
+
+%%%%%%%%%%%%%%%% broken rotor bar Phase A %%%%%%%%%%%%%%%
+        f1ref=currentrefAsupply_freq*1*(1+2*refAslip)-0.1;
+        f2ref=currentrefAsupply_freq*1*(1+2*refAslip)+1;
+range=find(currentrefAf>f1ref &currentrefAf<f2ref);
+refAmag=max(currentrefAFT(range(1):range(end)));
+
+slip=((2*supply_freq/poles)-rotor_freq)/(2*supply_freq/poles);
+
+if (abs(slip-refAslip)<0.05)
+        f1=supply_freq*1*(1+2*slip)-0.1;
+        f2=supply_freq*1*(1+2*slip)+1;
+range=find(f>f1 & f<f2);
+Amag=max(FT(range(1):range(end)));
+else
+Amag=refAmag;
+end
+
+%%%%%%%%%%%%%%%% Stator Fault Phase A %%%%%%%%%%%%%%%
+        f1ref=currentrefAsupply_freq*(1*(1-refAslip)+1)-10;
+        f2ref=currentrefAsupply_freq*(1*(1-refAslip)+1)+10;
+range=find(currentrefAf>f1ref &currentrefAf<f2ref);
+refAmagstr=max(currentrefAFT(range(1):range(end)));
+
+slip=((2*supply_freq/poles)-rotor_freq)/(2*supply_freq/poles);
+
+if (abs(slip-refAslip)<0.05)
+        f1=supply_freq*(1*(1-slip)+1)-10;
+        f2=supply_freq*(1*(1-slip)+1)+10;
+range=find(f>f1 & f<f2);
+Amagstr=max(FT(range(1):range(end)));
+else
+Amagstr=refAmagstr;
+end
+
+end
+end
+
+%%%%%%%%%%%%% Phase B %%%%%%%%%%%%%%%%%%%%%%%
+fprintf(s,'%c','b');
+pause(2);
+if(s.BytesAvailable>500)
+for count=1:80
+dat = fscanf(s,'%f');
+end
+
+for count=1:1000
+dat = fscanf(s,'%f');
+current(:,count) = dat(1);
+end
+count=0;
+
+time=fscanf(s,'%f');
+Fs=1/(time*0.000001);
+temp=fscanf(s,'%f');
+offset=538;
+tdmn=current-offset;
+
+if(Fs>=2000 && max(abs(tdmn>10)))
+axes(handles.axes3)
+plot(currentrefBtdmn*3.4/440,'b')
+axis([0,1000,-4,4])
+xlabel('Time (Samples)');
+ylabel('Magnitude (A)');
+holdon;
+
+axes(handles.axes3)
+plot(tdmn*3.4/440,'r')
+axis([0,1000,-4,4])
+xlabel('Time (Samples)');
+ylabel('Magnitude (A)');
+holdoff;
+
+axes(handles.axes4)
+plot(currentrefBf,currentrefBFT,'b');
+axis([0,200,0,100])
+xlabel('Frequency (Hz)');
+ylabel('Magnitude (%)');
+holdon;
+
+        L=length(tdmn);
+fdmn = fft(tdmn,NFFT)/L;
+        f=Fs/2*linspace(0,1,NFFT/2+1);
+        FT=2*abs(fdmn(1:NFFT/2+1));
+        FT=abs(FT);
+        FT=(FT/max(abs(FT)))*100;
+
+axes(handles.axes4)
+plot(f,FT,'r');
+axis([0,200,0,100])
+xlabel('Frequency (Hz)');
+ylabel('Magnitude (%)');
+holdoff;
+
+rotor_T=fscanf(s,'%f');
+rotor_freq=1/(rotor_T*0.000001);
+
+range=find(f>49 & f<51);
+supl=find(FT==max(FT(range(1):range(end))));
+supply_freq=f(supl);
+
+%%%%%%%%%%%%%%%% broken rotor bar Phase B %%%%%%%%%%%%%%%
+        f1ref=currentrefBsupply_freq*1*(1+2*refBslip)-0.1;
+        f2ref=currentrefBsupply_freq*1*(1+2*refBslip)+1;
+range=find(currentrefBf>f1ref &currentrefBf<f2ref);
+refBmag=max(currentrefBFT(range(1):range(end)));
+
+slip=((2*supply_freq/poles)-rotor_freq)/(2*supply_freq/poles);
+
+if (abs(slip-refBslip)<0.05)
+        f1=supply_freq*1*(1+2*slip)-0.1;
+        f2=supply_freq*1*(1+2*slip)+1;
+range=find(f>f1 & f<f2);
+Bmag=max(FT(range(1):range(end)));
+else
+Bmag=refBmag;
+end
+
+%%%%%%%%%%%%%%%% Stator Fault Phase B %%%%%%%%%%%%%%%
+        f1ref=currentrefAsupply_freq*(1*(1-refAslip)+1)-10;
+        f2ref=currentrefAsupply_freq*(1*(1-refAslip)+1)+10;
+range=find(currentrefAf>f1ref &currentrefAf<f2ref);
+refBmagstr=max(currentrefAFT(range(1):range(end)));
+
+slip=((2*supply_freq/poles)-rotor_freq)/(2*supply_freq/poles);
+
+if (abs(slip-refAslip)<0.05)
+        f1=supply_freq*(1*(1-slip)+1)-10;
+        f2=supply_freq*(1*(1-slip)+1)+10;
+range=find(f>f1 & f<f2);
+Bmagstr=max(FT(range(1):range(end)));
+else
+Bmagstr=refBmagstr;
+end
+
+end
+end
+
+%%%%%%%%%%%%%%%%%% Phase C %%%%%%%%%%%%%%%%%%%%%
+fprintf(s,'%c','c');
+pause(2);
+if(s.BytesAvailable>500)
+for count=1:80
+dat = fscanf(s,'%f');
+end
+
+for count=1:1000
+dat = fscanf(s,'%f');
+current(:,count) = dat(1);
+end
+count=0;
+
+time=fscanf(s,'%f');
+Fs=1/(time*0.000001);
+temp=fscanf(s,'%f');
+offset=538;
+tdmn=current-offset;
+
+if(Fs>=2000 && max(abs(tdmn>10)))
+axes(handles.axes5)
+plot(currentrefCtdmn*3.4/440,'b')
+axis([0,1000,-4,4])
+xlabel('Time (Samples)');
+ylabel('Magnitude (A)');
+holdon;
+
+axes(handles.axes5)
+plot(tdmn*3.4/440,'r')
+axis([0,1000,-4,4])
+xlabel('Time (Samples)');
+ylabel('Magnitude (A)');
+holdoff;
+
+axes(handles.axes6)
+plot(currentrefCf,currentrefCFT,'b');
+axis([0,200,0,100])
+xlabel('Frequency (Hz)');
+ylabel('Magnitude (%)');
+holdon;
+
+        L=length(tdmn);
+fdmn = fft(tdmn,NFFT)/L;
+        f=Fs/2*linspace(0,1,NFFT/2+1);
+        FT=2*abs(fdmn(1:NFFT/2+1));
+        FT=abs(FT);
+        FT=(FT/max(abs(FT)))*100;
+axes(handles.axes6)
+plot(f,FT,'r');
+axis([0,200,0,100])
+xlabel('Frequency (Hz)');
+ylabel('Magnitude (%)');
+holdoff;
+
+rotor_T=fscanf(s,'%f');
+rotor_freq=1/(rotor_T*0.000001);
+
+range=find(f>49 & f<51);
+supl=find(FT==max(FT(range(1):range(end))));
+supply_freq=f(supl);
+
+%%%%%%%%%%%%%%%% broken rotor bar Phase C %%%%%%%%%%%%%%%
+        f1ref=currentrefCsupply_freq*1*(1+2*refCslip)-0.1;
+        f2ref=currentrefCsupply_freq*1*(1+2*refCslip)+1;
+range=find(currentrefCf>f1ref &currentrefCf<f2ref);
+refCmag=max(currentrefCFT(range(1):range(end)));
+
+slip=((2*supply_freq/poles)-rotor_freq)/(2*supply_freq/poles);
+
+if (abs(slip-refCslip)<0.05)
+        f1=supply_freq*1*(1+2*slip)-0.1;
+        f2=supply_freq*1*(1+2*slip)+1;
+range=find(f>f1 & f<f2);
+Cmag=max(FT(range(1):range(end)));
+else
+Cmag=refCmag;
+end
+
+%%%%%%%%%%%%%%%% Stator Fault Phase C %%%%%%%%%%%%%%%%%%%
+        f1ref=currentrefAsupply_freq*(1*(1-refAslip)+1)-10;
+        f2ref=currentrefAsupply_freq*(1*(1-refAslip)+1)+10;
+range=find(currentrefAf>f1ref &currentrefAf<f2ref);
+refCmagstr=max(currentrefAFT(range(1):range(end)));
+
+slip=((2*supply_freq/poles)-rotor_freq)/(2*supply_freq/poles);
+
+if (abs(slip-refAslip)<0.05)
+        f1=supply_freq*(1*(1-slip)+1)-10;
+        f2=supply_freq*(1*(1-slip)+1)+10;
+range=find(f>f1 & f<f2);
+Cmagstr=max(FT(range(1):range(end)));
+else
+Cmagstr=refCmagstr;
+end
+
+end
+end
+
+%%%%%%%%%%%%% Vibration %%%%%%%%%%%%%%%%%%%%%%%
+fprintf(s,'%c','d');
+pause(2);
+if(s.BytesAvailable>800)
+for count=1:80
+dat = fscanf(s,'%f');
+end
+
+for count=1:2000
+dat = fscanf(s,'%f');
+current(:,count) = dat(1);
+end
+count=0;
+
+time=fscanf(s,'%f');
+Fs=1/(time*0.000001);
+temp=fscanf(s,'%f');
+offset=538;
+tdmn=current-offset;
+
+if(Fs>=2000)
+axes(handles.axes7)
+plot(vibreftdmn*2.5/440,'b')
+axis([0,1000,-5,5])
+xlabel('Time (Samples)');
+ylabel('Magnitude (V)');
+holdon;
+
+axes(handles.axes7)
+plot(tdmn*2.5/440,'r')
+axis([0,1000,-5,5])
+xlabel('Time (Samples)');
+ylabel('Magnitude (V)');
+holdoff;
+
+axes(handles.axes8)
+plot(vibreff,vibrefFT,'b');
+axis([0,500,0,100])
+xlabel('Frequency (Hz)');
+ylabel('Magnitude (%)');
+holdon;
+
+        L=length(tdmn);
+fdmn = fft(tdmn,NFFT)/L;
+        f=Fs/2*linspace(0,1,NFFT/2+1);
+        FT=2*abs(fdmn(1:NFFT/2+1));
+        FT=abs(FT);
+        FT=(FT/max(abs(FT)))*100;
+axes(handles.axes8)
+plot(f,FT,'r');
+axis([0,500,0,100])
+xlabel('Frequency (Hz)');
+ylabel('Magnitude (%)');
+holdoff;
+
+rotor_T=fscanf(s,'%f');
+rotor_freq=1/(rotor_T*0.000001);
+rotor_freq=24.75;
+
+end
+end
+
+set(handles.text11,'string',temp);
+set(handles.text13,'string',rotor_freq);
+set(handles.text15,'string',supply_freq);
+
+if (Amag-refAmag>=0.05*refAmag)
+set(handles.text21,'string','Broken Rotor Bar Fault Detected');
+end
+if (Bmag-refBmag>=0.05*refBmag)
+set(handles.text21,'string','Broken Rotor Bar Fault Detected');
+end
+if (Cmag-refCmag>=0.05*refCmag)
+set(handles.text21,'string','Broken Rotor Bar Fault Detected');
+end
+
+if (Amagstr-refAmagstr>=0.1*refAmagstr)
+set(handles.text18,'string','Stator Short Winding Fault Detected Phase A');
+fprintf(s,'%c','h');
+           n=0;
+end
+if (Bmagstr-refBmagstr>=0.1*refBmagstr)
+set(handles.text19,'string','Stator Short Winding Fault Detected Phase B');
+fprintf(s,'%c','h');
+           n=0;
+end
+if (Cmagstr-refCmagstr>=0.1*refCmagstr)
+set(handles.text20,'string','Stator Short Winding Fault Detected Phase C');
+fprintf(s,'%c','h');
+           n=0;
+end
+disp('Temperature')
+disp(temp)
+
+disp('Rotor Frequency')
+disp(rotor_freq)
+
+disp('//////////////////////////////////////');
+flushinput(s);
+
+end
+
+function edit1_Callback(hObject, eventdata, handles)
+
+function edit1_CreateFcn(hObject, eventdata, handles)
+ifispc&&isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+set(hObject,'BackgroundColor','white');
+end
+
+function pushbutton3_Callback(hObject, eventdata, handles)
+global s;
+cla(handles.axes1,'reset')
+cla(handles.axes2,'reset')
+cla(handles.axes3,'reset')
+cla(handles.axes4,'reset')
+cla(handles.axes5,'reset')
+cla(handles.axes6,'reset')
+cla(handles.axes7,'reset')
+cla(handles.axes8,'reset')
+cla(handles.text11,'reset')
+cla(handles.text13,'reset')
+cla(handles.text15,'reset')
+cla(handles.text18,'reset')
+cla(handles.text19,'reset')
+cla(handles.text20,'reset')
+cla(handles.text21,'reset')
+guidata(hObject,handles);
+set(handles.pushbutton1,'string','Turn ON','backgroundColor','r','enable','on');
+fclose(s);
